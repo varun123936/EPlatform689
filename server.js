@@ -1,34 +1,29 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-require('dotenv').config();
+const sequelize = require('./config/db');
+const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
 const logger = require('./utils/logger');
+require('dotenv').config();
 
 const app = express();
 
-// Connect to the database
-connectDB();
-
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-app.get('/', (req, res) => {
-    res.send('E-commerce platform API is running...');
-});
+const PORT = process.env.PORT || 3000;
 
-// Error handling middleware (must be after the routes)
-app.use(errorHandler);
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-    logger.info(`Server running on port ${PORT}`);
-});
+sequelize.sync()
+    .then(() => {
+        app.listen(PORT, () => {
+            logger.info(`Server running on port ${PORT}`);
+        });
+    })
+    .catch(err => {
+        logger.error(`Failed to connect to the database: ${err.message}`);
+    });

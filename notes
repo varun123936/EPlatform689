@@ -1,34 +1,43 @@
-E-commerce Platform project complete example end to end using node js
+npm install express mysql2 sequelize bcryptjs jsonwebtoken winston dotenv
 
-npm install express mongoose bcryptjs jsonwebtoken body-parser dotenv
-npm install morgan
+CREATE DATABASE ecommerce;
 
+USE ecommerce;
 
-Create a .env file in the root directory:
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-Logging
-npm install winston
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    price DECIMAL(10, 2),
+    stock INT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-transports.Console(): Logs to the console, useful during development.
-transports.File({ filename: 'logs/error.log', level: 'error' }): Logs errors to a file.
-transports.File({ filename: 'logs/combined.log' }): Logs all messages to a combined log file.
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT,
+    total DECIMAL(10, 2),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id)
+);
 
-Summary
-By adding error handling and logging, the e-commerce platform is now more robust and maintainable:
-
-Error Handling Middleware: Centralizes error management, making it easier to handle errors consistently across the application.
-Logging with Winston: Provides detailed logs for both application behavior and errors, which are essential for debugging and monitoring.
-HTTP Request Logging with Morgan: Captures every incoming HTTP request, giving insights into how the API is being used and identifying potential issues.
-With these improvements, you now have a more production-ready e-commerce platform.
-
-Update server.js:
-
-javascript
-Copy code
-const morgan = require('morgan');
-const logger = require('./utils/logger');
-
-// HTTP request logging
-app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orderId INT,
+    productId INT,
+    quantity INT,
+    price DECIMAL(10, 2),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderId) REFERENCES orders(id),
+    FOREIGN KEY (productId) REFERENCES products(id)
+);

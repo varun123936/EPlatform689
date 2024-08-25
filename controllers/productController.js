@@ -1,33 +1,24 @@
 const Product = require('../models/Product');
+const logger = require('../utils/logger');
 
-const getProducts = async (req, res) => {
+exports.createProduct = async (req, res) => {
     try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-const getProductById = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        res.json(product);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-const createProduct = async (req, res) => {
-    const { name, price, description, image, stock } = req.body;
-
-    try {
-        const product = new Product({ name, price, description, image, stock });
-        await product.save();
+        const { name, description, price, stock } = req.body;
+        const product = await Product.create({ name, description, price, stock });
         res.status(201).json(product);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        logger.info(`Product created: ${name}`);
+    } catch (error) {
+        logger.error(`Error creating product: ${error.message}`);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
-module.exports = { getProducts, getProductById, createProduct };
+exports.getAllProducts = async (req, res) => {
+    try {
+        const products = await Product.findAll();
+        res.json(products);
+    } catch (error) {
+        logger.error(`Error fetching products: ${error.message}`);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};

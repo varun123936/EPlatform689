@@ -1,25 +1,14 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
+const User = require('./User');
 
-const OrderSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+const Order = sequelize.define('Order', {
+    total: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
     },
-    orderItems: [
-        {
-            product: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product',
-                required: true,
-            },
-            quantity: { type: Number, required: true },
-        },
-    ],
-    totalPrice: { type: Number, required: true },
-    isPaid: { type: Boolean, default: false },
-    paidAt: { type: Date },
-    createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Order', OrderSchema);
+Order.belongsTo(User, { foreignKey: 'userId' });
+
+module.exports = Order;
