@@ -16,6 +16,7 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await Product.findAll();
+        logger.info(`Fetched all products`);
         res.json(products);
     } catch (error) {
         logger.error(`Error fetching products: ${error.message}`);
