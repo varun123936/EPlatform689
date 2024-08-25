@@ -41,3 +41,11 @@ CREATE TABLE order_items (
     FOREIGN KEY (orderId) REFERENCES orders(id),
     FOREIGN KEY (productId) REFERENCES products(id)
 );
+
+git status
+git add .
+git commit -m "Your descriptive commit message"
+git push origin main
+ or
+ git pull origin main
+ git push origin main
